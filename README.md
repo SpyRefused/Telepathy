@@ -1,0 +1,2 @@
+# Telepathy
+.Net Core Implementation
