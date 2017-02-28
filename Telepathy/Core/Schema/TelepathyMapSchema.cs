@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Reflection.Metadata;
+﻿using System.IO;
 using System.Text;
+using Telepathy.Core.Index.Key;
 
 namespace Telepathy.Core.Schema
 {
@@ -65,7 +64,9 @@ namespace Telepathy.Core.Schema
 
         protected bool Equals(TelepathyMapSchema other)
         {
-            return string.Equals(KeyType, other.KeyType) && string.Equals(ValueType, other.ValueType) && HashKey.Equals(other.HashKey) && KeyTypeState.Equals(other.KeyTypeState) && ValueTypeState.Equals(other.ValueTypeState);
+            return string.Equals(KeyType, other.KeyType) && string.Equals(ValueType, other.ValueType) &&
+                   HashKey.Equals(other.HashKey) && KeyTypeState.Equals(other.KeyTypeState) &&
+                   ValueTypeState.Equals(other.ValueTypeState);
         }
 
         public override int GetHashCode()
@@ -89,12 +90,12 @@ namespace Telepathy.Core.Schema
             if (HashKey != null)
             {
                 builder.Append(" @HashKey(");
-                if (HashKey.numFields() > 0)
+                if (HashKey.FieldPaths.Length > 0)
                 {
-                    builder.Append(HashKey.FieldPath(0));
-                    for (int i = 1; i < HashKey.NumFields(); i++)
+                    builder.Append(HashKey.FieldPaths[0]);
+                    for (var i = 1; i < HashKey.FieldPaths.Length; i++)
                     {
-                        builder.Append(", ").Append(HashKey.FieldPath(i));
+                        builder.Append(", ").Append(HashKey.FieldPaths[i]);
                     }
                 }
                 builder.Append(")");
