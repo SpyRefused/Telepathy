@@ -22,11 +22,13 @@ namespace Telepathy.Core.Schema
 
         public override SchemaType SchemaType => SchemaType.Map;
 
-        public override void WriteTo(StreamWriter streamWriter)
+        public override void WriteTo(Stream stream)
         {            
-            DataOutputStream dos = new Strea(os);
+            var streamWriter = new StreamWriter(stream);
 
-            if (getHashKey() != null)
+            Stre
+            if (HashKey != null)
+                
                 dos.write(SchemaType.MAP.getTypeIdWithPrimaryKey());  
             else
                 dos.write(SchemaType.MAP.getTypeId());

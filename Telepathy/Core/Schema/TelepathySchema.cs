@@ -14,7 +14,7 @@ namespace Telepathy.Core.Schema
 
         public abstract SchemaType SchemaType { get; }
 
-        public abstract void WriteTo(StreamWriter streamWriter);
+        public abstract void WriteTo(Stream stream);
 
         public static TelepathySchema WithoutKeys(TelepathySchema schema)
         {
