@@ -1,4 +1,5 @@
 ﻿using System;
+using Telepathy.Core.Schema;
 
 namespace Telepathy.Core.Index.Key
 {
@@ -27,12 +28,12 @@ namespace Telepathy.Core.Index.Key
 
         public static FieldType GetFieldType(HollowDataset dataAccess, string type, string fieldPath)
         {
-            HollowObjectSchema schema = (HollowObjectSchema)dataAccess.GetSchema(type);
+            TelepathyObjectSchema schema = (TelepathyObjectSchema)dataAccess.GetSchema(type);
             var pathIndexes = GetFieldPathIndex(dataAccess, type, fieldPath);
 
             for (var i = 0; i < pathIndexes.Length - 1; i++)
-                schema = (HollowObjectSchema) dataAccess.GetSchema(schema.getReferencedType(pathIndexes[i]));
-            return schema.getFieldType(pathIndexes[pathIndexes.Length - 1]);
+                schema = (TelepathyObjectSchema) dataAccess.GetSchema(schema.GetReferencedType(pathIndexes[i]));
+            return schema.GetFieldType(pathIndexes[pathIndexes.Length - 1]);
         }
 
         public static int[] GetFieldPathIndex(HollowDataset dataset, string type, string fieldPath)
@@ -43,15 +44,15 @@ namespace Telepathy.Core.Index.Key
 
             for (var i = 0; i < paths.Length; i++)
             {
-                HollowObjectSchema schema = (HollowObjectSchema)dataset.GetSchema(refType);
+                TelepathyObjectSchema schema = (TelepathyObjectSchema)dataset.GetSchema(refType);
                 try
                 {
-                    pathIndexes[i] = schema.getPosition(paths[i]);
-                    refType = schema.getReferencedType(pathIndexes[i]);
+                    pathIndexes[i] = schema.GetPosition(paths[i]);
+                    refType = schema.GetReferencedType(pathIndexes[i]);
                 }
                 catch (Exception)
                 {
-                    throw new Exception("Failed create path index for fieldPath=" + fieldPath + ", fieldName=" + paths[i] + " schema=" + schema.getName());
+                    throw new Exception("Failed create path index for fieldPath=" + fieldPath + ", fieldName=" + paths[i] + " schema=" + schema.Name);
                 }
             }
 
@@ -60,7 +61,7 @@ namespace Telepathy.Core.Index.Key
 
         public override int GetHashCode()
         {
-            var prime = 31;
+            const int prime = 31;
             var result = 1;
             
             result = prime * result + FieldPaths.GetHashCode();

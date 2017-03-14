@@ -20,12 +20,12 @@ namespace Telepathy.Core.Schema
         {
             switch (schema.SchemaType.TypeId)
             {
-                case Schema.SchemaType.List.TypeId:
+                case SchemaType.SetSchemaTypeId:
                     var setSchema = schema as TelepathySetSchema;        
                     return setSchema;
                 case Schema.SchemaType.Map.TypeId:
                     var mapSchema = schema as TelepathyMapSchema;
-                    if (mapSchema.getHashKey() != null)
+                    if (mapSchema.HashKey() != null)
                         mapSchema = new HollowMapSchema(mapSchema.getName(), mapSchema.getKeyType(), mapSchema.getValueType());
                     return mapSchema;
                 default:
