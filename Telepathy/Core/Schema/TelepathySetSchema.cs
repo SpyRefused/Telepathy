@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Telepathy.Core.Schema
 {
@@ -12,6 +13,11 @@ namespace Telepathy.Core.Schema
         public override void WriteTo(StreamWriter streamWriter)
         {
             throw new System.NotImplementedException();
+        }
+
+        public override void WriteTo(Stream stream)
+        {
+            throw new NotImplementedException();
         }
     }
 }

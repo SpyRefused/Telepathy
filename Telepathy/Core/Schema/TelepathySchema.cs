@@ -12,13 +12,17 @@ namespace Telepathy.Core.Schema
 
         public string Name { get; private set; }
         public abstract SchemaType SchemaType { get; }
+
         public abstract void WriteTo(Stream stream); //Throws IOException
+
         public static TelepathySchema WithoutKeys(TelepathySchema schema)
         {
             switch (schema.SchemaType.TypeId)
             {
                 case SchemaType.SetSchemaTypeId:
-                    var setSchema = schema as TelepathySetSchema;        
+                    var setSchema = schema as TelepathySetSchema;
+                    if (setSchema?.HashKey != null)
+                        setSchema = TelepathySetSchema(setSchema.Name, setSchema.ElementType);
                     return setSchema;
 
                 case SchemaType.MapSchemaTypeId:
@@ -36,7 +40,6 @@ namespace Telepathy.Core.Schema
         {
             var streamReader = new StreamReader(stream, new UTF8Encoding());
             var schemaTypeId = streamReader.Read();
-
             var schemaName = streamReader.ReadLine();
 
             switch (SchemaType.TypeId(schemaTypeId))
