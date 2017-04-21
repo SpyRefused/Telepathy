@@ -45,19 +45,48 @@ namespace Telepathy.Core.Schema
             switch (SchemaType.TypeId(schemaTypeId))
             {
                 case OBJECT:
-                    return readObjectSchemaFrom(dis, schemaName, SchemaType.HasKey(schemaTypeId));
+                    return ReadObjectSchemaFrom(dis, schemaName, SchemaType.HasKey(schemaTypeId));
                 case LIST:
-                    return readListSchemaFrom(dis, schemaName);
+                    return ReadObjectSchemaFrom(dis, schemaName);
                 case SET:
-                    return readSetSchemaFrom(dis, schemaName, SchemaType.hasKey(schemaTypeId));
+                    return ReadObjectSchemaFrom(dis, schemaName, SchemaType.hasKey(schemaTypeId));
                 case MAP:
-                    return readMapSchemaFrom(dis, schemaName, SchemaType.hasKey(schemaTypeId));
+                    return ReadObjectSchemaFrom(dis, schemaName, SchemaType.hasKey(schemaTypeId));
             }
 
             throw new IOException();
         }
 
 
+        private static TelepathyObjectSchema ReadObjectSchemaFrom(Stream stream, string schemaName, bool hasPrimaryKey)
+        {
+            string[] keyFieldPaths = null;
+            
+            var streamReader = new StreamReader(stream);
 
+            if (hasPrimaryKey)
+            {
+                stream.re
+                int numFields = VarInt.readVInt(is);
+                keyFieldPaths = new string[numFields];
+                for (int i = 0; i < numFields; i++)
+                {
+                    keyFieldPaths[i] = is.readUTF();
+                }
+            }
+
+            int numFields = is.readShort();
+            TelepathyObjectSchema schema = new HollowObjectSchema(schemaName, numFields, keyFieldPaths);
+
+            for (int i = 0; i < numFields; i++)
+            {
+                String fieldName = is.readUTF();
+                FieldType fieldType = FieldType.valueOf(is.readUTF());
+                String referencedType = fieldType == FieldType.REFERENCE ? is.readUTF() : null;
+                schema.addField(fieldName, fieldType, referencedType);
+            }
+
+            return schema;
+        }
     }
 }

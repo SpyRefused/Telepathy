@@ -14,4 +14,8 @@
     <Folder Include="Core\Schema\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Telepathy\Telepathy.csproj" />
+  </ItemGroup>
+
 </Project>
