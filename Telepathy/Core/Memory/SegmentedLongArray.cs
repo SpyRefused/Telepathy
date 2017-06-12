@@ -1,4 +1,6 @@
-﻿using Telepathy.Core.Memory.Pool;
+﻿using System;
+using System.Runtime.InteropServices;
+using Telepathy.Core.Memory.Pool;
 
 namespace Telepathy.Core.Memory
 {
@@ -39,16 +41,23 @@ namespace Telepathy.Core.Memory
 
         
         // Set the byte at the given index to the specified value        
-        public void Set(long index, long value)
+        public unsafe void Set(long index, long value)
         {
             var segmentIndex = (int)(index >> Log2OfSegmentSize);
             var longInSegment = (int)(index & Bitmask);
 
-            unsafe.putOrderedLong(segments[segmentIndex], (long)Unsafe.ARRAY_LONG_BASE_OFFSET + (8 * longInSegment), value);
+            //unsafe.putOrderedLong(segments[segmentIndex], (long)Unsafe.ARRAY_LONG_BASE_OFFSET + (8 * longInSegment), value);
 
             // duplicate the longs here so that we can read faster.
-            if (longInSegment == 0 && segmentIndex != 0)
-                unsafe.putOrderedLong(segments[segmentIndex - 1], (long)Unsafe.ARRAY_LONG_BASE_OFFSET + (8 * (1 << log2OfSegmentSize)), value);
+            //if (longInSegment == 0 && segmentIndex != 0)
+                //unsafe.putOrderedLong(segments[segmentIndex - 1], (long)Unsafe.ARRAY_LONG_BASE_OFFSET + (8 * (1 << log2OfSegmentSize)), value);
+
+            Marshal.SizeOf()
+            byte[] byteArray = new byte[Marshal.SizeOf(structure)];
+            fixed (byte* byteArrayPtr = byteArray)
+            {
+                Marshal.StructureToPtr(structure, (IntPtr)byteArrayPtr, true);
+            }
         }
     }
 }
