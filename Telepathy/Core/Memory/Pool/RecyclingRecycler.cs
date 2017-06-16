@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Telepathy.Core.Memory.Pool;
+using Telepathy.Core.Util;
 
- // A RecyclingRecycler is an ArraySegmentRecycler which actually pools arrays, in contrast
+// A RecyclingRecycler is an ArraySegmentRecycler which actually pools arrays, in contrast
  // with a WastefulRecycler.  
 
 public class RecyclingRecycler : IArraySegmentRecycler
@@ -19,9 +21,27 @@ public class RecyclingRecycler : IArraySegmentRecycler
         _log2OfByteSegmentSize = log2ByteArraySize;
         _log2OfLongSegmentSize = log2LongArraySize;
 
-        _longSegmentRecycler = new Recycler<long[]>(new Creator<long[]>());
-            
-    }    
+        _longSegmentRecycler = new Recycler<long[]>(new Creator<long[]>{ Create = () => new long[(1 << log2LongArraySize) + 1]});
+        _byteSegmentRecycler = new Recycler<byte[]>(new Creator<byte[]> { Create = () => new byte[1 << log2ByteArraySize] });
+
+    }
+
+    public int GetLog2OfByteSegmentSize()
+    {
+        return _log2OfByteSegmentSize;
+    }
+
+    public int GetLog2OfLongSegmentSize()
+    {
+        return _log2OfLongSegmentSize;
+    }
+
+    public long[] GetLongArray()
+    {
+        var arr = _longSegmentRecycler.Get();
+        arr.Fill(0);
+        return arr;
+    }
 
     private class Recycler<T>
     {
@@ -39,13 +59,12 @@ public class RecyclingRecycler : IArraySegmentRecycler
 
         public T Get()
         {
-            if (_currentSegments.Count > 0)
-            {
-                var first = _currentSegments.First.Value;
-                _currentSegments.RemoveFirst();
-                return first;
-            }
-            return _creator.Create();
+            if (_currentSegments.Count <= 0) return _creator.Create();
+
+            var first = _currentSegments.First.Value;
+            _currentSegments.RemoveFirst();
+
+            return first;
         }
 
         public void Recycle(T reuse)
@@ -55,25 +74,25 @@ public class RecyclingRecycler : IArraySegmentRecycler
 
         public void Swap()
         {
-            foreach(var segment in _nextSegments)
+            foreach (var segment in _nextSegments)
             {
                 _currentSegments.AddLast(segment);
-            }            
+            }
             _nextSegments.Clear();
         }
     }
 
     private interface ICreator<T>
     {
-        T Create();
+        Func<T> Create { get; set; }
     }
 
     private class Creator<T> : ICreator<T>
     {
-        public long[] Create(int log2LongArraySize)
-        {
-            return new long[(1 << log2LongArraySize) + 1];
-        }
+        public Func<T> Create { get; set; }
     }
-}
+}    
+
+    
+
 
