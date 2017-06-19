@@ -9,7 +9,6 @@ namespace Telepathy.Core.Memory.Pool
 {
     public class RecyclingRecycler : IArraySegmentRecycler
     {
-
         private readonly int _log2OfByteSegmentSize;
         private readonly int _log2OfLongSegmentSize;
         private readonly Recycler<long[]> _longSegmentRecycler;

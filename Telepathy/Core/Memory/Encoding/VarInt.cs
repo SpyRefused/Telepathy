@@ -8,7 +8,6 @@ namespace Telepathy.Core.Memory.Encoding
         /**
          * Read a variable length integer from the supplied InputStream
          */
-
         public static int ReadVarInt(BinaryReader binaryReader) // throws IOException
         {
             var b = (byte)binaryReader.Read();
